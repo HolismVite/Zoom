@@ -2,7 +2,7 @@ import ZoomMtgEmbedded from "@zoomus/websdk/dist/zoomus-websdk-embedded.umd.min"
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import { useState, useEffect } from 'react';
-import { get, app } from '@Panel';
+import { get, app, useMessage } from '@Panel';
 
 const client = ZoomMtgEmbedded.createClient();
 
@@ -11,6 +11,7 @@ const JoinMeeting = () => {
     const [meetingNumber, setMeetingNumber] = useState('');
     const [password, setPassword] = useState('');
     const [progress, setProgress] = useState(false);
+    const { success, error } = useMessage()
 
     useEffect(() => {
         let meetingSDKElement = document.getElementById('meetingSDKElement');
@@ -40,7 +41,7 @@ const JoinMeeting = () => {
         get(`/zoom/generateToken?meetingNumber=${meetingNumber}`).then(data => {
             console.log(data);
             setProgress(false);
-            app.success('You are joining ...');
+            success('You are joining ...');
             try {
                 client.join({
                     apiKey: `${process.env.REACT_APP_ZOOM_API_KEY}`,
@@ -53,9 +54,9 @@ const JoinMeeting = () => {
             catch (ex) {
                 app.error(ex);
             }
-        }, error => {
+        }, e => {
             setProgress(false);
-            app.error(error);
+            error(e);
         });
     }
 
